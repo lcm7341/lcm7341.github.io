@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Page Title</title>
+<link rel="stylesheet" href="https://cdn.rawgit.com/Chalarangelo/mini.css/v3.0.1/dist/mini-default.min.css">
+</head>
+<body>
+
+<form>
+<fieldset>
+
+<legend>Grade Calculator</legend>
+<label>Correct Answers:</label>
+<input placeholder="Amount" type="number" id="correct"><br>
+<label>Total Answers:</label>
+<input placeholder="Amount" type="number" id="total"><br>
+<button type='button' onclick="calc_grade()">Calculate</button>
+<div id="message"><div>
+
+</fieldset>
+</form>
+
+<script>
+function getID(id) {
+return document.getElementById(id);
+}
+function letterGrade(per) {
+    let letter;
+    let letters = [{D: 60, C: 70, B: 80, A: 90}];
+    
+    for (let i = 0; i<letters.length; i++) {
+        if (per >= letters[i].D) letter = 'D';
+        if (per >= letters[i].C) letter = 'C';
+        if (per >= letters[i].B) letter = 'B';
+        if (per >= letters[i].A) letter = 'A';
+        if (per < 60) letter = 'F';
+    }
+    
+    per = per.toString();
+    if (letter != 'F') {
+    if (per.charAt(1) >= 7) letter += '+';
+    if (per.charAt(1) <= 2) letter += '-';
+    }
+    if (per >= 100) letter = 'A+';
+    return letter;
+}
+
+function grade(amt_right, total) {
+    let perc = amt_right/total * 100;
+    
+    letter_grade = letterGrade(perc);
+    
+    return [{formula: `${amt_right}/${total}`, percent: perc.toFixed(2), grade: letter_grade}];
+    
+    //return `${amt_right}/${total} is a ${percent.toFixed(2)}%, the grade being a(n) ${letter_grade}`;
+}
+
+function calc_grade() {
+	var msg = getID("message");
+    
+    let obj = grade(getID("correct").value, getID("total").value);
+    
+ 	let grd = obj[0];
+    
+    msg.innerHTML = `<h>Grade: ${grd.percent}%</h>, ${grd.grade}`
+}
+
+
+</script>
+
+</body>
+</html>
+
+

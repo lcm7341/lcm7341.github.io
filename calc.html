@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <meta name="description" content="Advanced Calculator">
+  <title>Calculator++</title>
+  <script src="https://unpkg.com/mathjs/lib/browser/math.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/nerdamer@latest/nerdamer.core.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/nerdamer@latest/Algebra.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/nerdamer@latest/Calculus.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/nerdamer@latest/Solve.js"></script>
+  <link rel="stylesheet" href="https://cdn.rawgit.com/Chalarangelo/mini.css/v3.0.1/dist/mini-default.min.css">
+</head>
+<body>
+    <form>
+        <fieldset>
+        <legend>Calculator++</legend>
+<textarea placeholder="Problem to solve" type="text" id="problem" rows="10" cols="30"></textarea><hr>
+<button type="button" onclick="solve()">Solve</button>
+<input type="checkbox" id="use-js" name="use-js" unchecked><label for="use-js">Use JavaScript Code</label>
+<hr>
+<h id="sol"></h><br>
+<textarea placeholder="Extra scripts" type="text" id="extra" rows="3" cols="30"></textarea>
+</fieldset>
+</form>
+
+<div id="myPlot" style="width:100%;max-width:700px"></div>
+
+<script type="text/javascript">
+function getID(id) { return document.getElementById(id); }
+
+function setText(text) {
+    var sol = getID("sol");
+    sol.textContent = `${text}`;
+}
+
+function parseExtra() {
+var extra = getID("extra");
+
+var check = function(a){ return extra.value.split(' ')[0] == a; }
+
+if (extra.value != "") {
+var cmnd = extra.value.split(' ');
+
+if (check("find")) solveFor(cmnd[1]);
+if (check("simplify")) simplify();
+
+return true;
+} return false;
+}
+
+function solve() {
+if (parseExtra() == true) return;
+var problem = getID("problem");
+var evaluation;
+try {
+    if (problem.value == "") throw `Error: No problem entered`;
+    if (getID("use-js").checked)
+    evaluation = "Solution: " + eval(problem.value);
+    else evaluation = "Solution: " + math.evaluate(problem.value);
+} catch(e) {
+    evaluation = `${e}`;
+}
+setText(evaluation);
+}
+
+function simplify() {
+var problem = getID("problem");
+var evaluation;
+try {
+    if (problem.value == "") throw `Error: No problem entered`;
+    if (getID("use-js").checked)
+    evaluation = "Simplified: " + math.simplify(eval(problem.value));
+    else
+    evaluation = "Simplified: " + math.simplify(problem.value);
+} catch(e) {
+    evaluation = `${e}`;
+}
+setText(evaluation);
+}
+
+function solveFor(x) {
+var problem = getID("problem");
+var evaluation;
+try {
+    if (problem.value == "") throw `Error: No problem entered`;
+    if (getID("use-js").checked)
+    evaluation = `${x.toUpperCase()}: ` + nerdamer.solve(eval(problem.value), x);
+    else {
+    var temp = nerdamer.solveEquations(`${problem.value}`,`${x}`);
+    evaluation = `${x.toUpperCase()}: `;
+    temp = nerdamer(`${temp}`);
+    evaluation += temp;
+    }
+} catch(e) {
+    evaluation = `${e}`;
+    console.log(e);
+}
+setText(evaluation);
+}
+
+</script>
+</body>
+</html>
+
+
+
+
