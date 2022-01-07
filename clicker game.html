@@ -6,44 +6,67 @@
 </head>
 <body>
 
-<h1>This is a Heading</h1>
+<h1>Basic Clicker Game</h1>
 <p>Bucks: <span id="bx">0</span></p>
 <p>CPS: <span id="cps">0</span></p>
 <p>Multiplier: x<span id="mult">1</span></p>
 <button id="getbx">Hold here!</button><br>
 <div id="upgrades">
-<button id="u-1" disabled>Add 1 CPS ($<span id="c-1">10</span>)</button>
+
 </div>
 
 <script>
 
-$(function() {
-	var hold = false;
 var bucks = 0;
+var hold = false;
 var mult = 1;
 var cps = 0;
+
+$(function() {
 
 function getID(id) {
     return document.getElementById(id);
 }
 
+var upgradesIndex = 0;
 
-function makeUpgrade(i, text, cost, prize) {
+function makeUpgrade(text, cost, prize) {
+    upgradesIndex += 1;
 	getID("upgrades").innerHTML += (`
 	<br>
-	<button id=u-${i}>${text} ($<span id="c-${i}">${cost})</span></button>
-	<script>
-    $(function() {
-	$("#u-${i}").click(${prize});
-	$("#bx").html(parseInt($("#bx").html()) - ${cost})})</script` + `>`)
+	<button disabled id=u-${upgradesIndex}>${text} ($<span id="c-${upgradesIndex}">${cost})</span> - ID: ${upgradesIndex}</button>`);
+    getID("scr").innerHTML += (`
+    
+    function LOOP_${upgradesIndex}() {
+    	if (bucks >= ${cost}) {
+    		$("#u-${upgradesIndex}").prop("disabled", false);
+    	} else {
+    		$("#u-${upgradesIndex}").prop("disabled", true);
+    	}
+    	setTimeout(LOOP_${upgradesIndex});
+    }
+    
+    LOOP_${upgradesIndex}();
+    
+    $("#u-${upgradesIndex}").click(function() {
+    	bucks -= ${cost};
+        //${prize};
+    });
+    `);
 }
 
+const upgrades = {
+	oneCPS() {
+    	cps += 1;
+    },
+    oneMult() {
+    	mult += 1;
+    }
+};
 
+makeUpgrade("Add 1 CPS", 10, upgrades.oneCPS);
 
-makeUpgrade(2, "test", 20, function(){
-	bucks += 9999;
-	console.log('hi')
-})
+makeUpgrade("Add Multiplier", 2, upgrades.oneMult);
 	
 $("#getbx").click(function() {
 	bucks += mult;
@@ -57,10 +80,10 @@ $("#getbx").click(function() {
 		hold = false;
 	})
 
-$("#u-1").click(function() {
+/*$("#u-1").click(function() {
 	cps++;
 	bucks -= 10;
-})
+})*/
 	
 function clkBtn() {
     bucks += mult;
@@ -74,14 +97,6 @@ function update() {
     $("#bx").html(bucks);
 	$("#cps").text(cps);
 	$("#mult").text(mult);
-
-    for (let i = 0; i<=1; i++) {
-        if (bucks >= getCost(i)) {
-				$(`#u-1`).prop("disabled", false);
-        } else {
-					$(`#u-1`).prop("disabled", true);
-				}
-    }
 
     setTimeout(update);
 }
@@ -105,6 +120,8 @@ autoClick();
 })
 
 </script>
+
+<script id="scr"></script>
 
 </body>
 </html>
