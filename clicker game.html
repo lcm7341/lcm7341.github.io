@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Page Title</title>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<h1>This is a Heading</h1>
+<p>Bucks: <span id="bx">0</span></p>
+<p>CPS: <span id="cps">0</span></p>
+<p>Multiplier: x<span id="mult">1</span></p>
+<button id="getbx">Hold here!</button><br>
+<div id="upgrades">
+<button id="u-1" disabled>Add 1 CPS ($<span id="c-1">10</span>)</button>
+</div>
+
+<script>
+
+$(function() {
+	var hold = false;
+var bucks = 0;
+var mult = 1;
+var cps = 0;
+
+function getID(id) {
+    return document.getElementById(id);
+}
+
+
+function makeUpgrade(i, text, cost, prize) {
+	getID("upgrades").innerHTML += (`
+	<br>
+	<button id=u-${i}>${text} ($<span id="c-${i}">${cost})</span></button>
+	<script>
+    $(function() {
+	$("#u-${i}").click(${prize});
+	$("#bx").html(parseInt($("#bx").html()) - ${cost})})</script` + `>`)
+}
+
+
+
+makeUpgrade(2, "test", 20, function(){
+	bucks += 9999;
+	console.log('hi')
+})
+	
+$("#getbx").click(function() {
+	bucks += mult;
+});
+
+	$("#getbx").mousedown(function() {
+		hold = true;
+	})
+
+	$("#getbx").mouseup(function() {
+		hold = false;
+	})
+
+$("#u-1").click(function() {
+	cps++;
+	bucks -= 10;
+})
+	
+function clkBtn() {
+    bucks += mult;
+}
+
+function getCost(u) {
+	return parseInt($(`#c-${u}`).text());
+}
+
+function update() {
+    $("#bx").html(bucks);
+	$("#cps").text(cps);
+	$("#mult").text(mult);
+
+    for (let i = 0; i<=1; i++) {
+        if (bucks >= getCost(i)) {
+				$(`#u-1`).prop("disabled", false);
+        } else {
+					$(`#u-1`).prop("disabled", true);
+				}
+    }
+
+    setTimeout(update);
+}
+
+function autoClick() {
+    if (cps > 0) {
+        bucks++;
+        setTimeout(autoClick, 1000 / cps);
+    } else {
+        setTimeout(autoClick, 1000);
+    }
+}
+
+setInterval(function() {
+    if (hold) bucks++;
+}, 500);
+
+update();
+autoClick();
+
+})
+
+</script>
+
+</body>
+</html>
+
+
